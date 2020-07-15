@@ -1,0 +1,77 @@
+@Controller
+public class SubscriberController {
+	
+	@Autowired
+	private SubscriberRepository subscriberRepository;
+	
+	@GetMapping(value="/")
+	public String index(Subscriber subscriber) {
+		//This is where we will want to send the program when we begin executing our program.
+		return "subscriber/index";
+	}
+	
+	//creating a new object that will be used to populate our method below
+	
+	
+	@PostMapping(value = "/")
+	public String addNewSubscriber(Subscriber subscriber, Model model) {
+		subscriberRepository.save(new Subscriber(subscriber.getFirstName(),
+	        subscriber.getLastName(), subscriber.getUserName(), subscriber.getSignedUp()));
+		model.addAttribute("firstName", subscriber.getFirstName());
+		model.addAttribute("lastName", subscriber.getLastName());
+		model.addAttribute("userName", subscriber.getUserName());
+		return "subscriber/result";
+	}
+}
+public interface SubscriberRepository extends CrudRepository<Subscriber, Long>{
+    
+}
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Subscriber List</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Welcome to Our Awesome Site!</h1>
+	<h3>Subscribe to our List. Sign-up below!</h3>
+​
+	<p>Please use the form below to sign up as a subscriber:</p>
+	<form action="#" th:action="@{/}" th:object="${subscriber}"
+		method="post">
+		<table>
+			<tr>
+				<td>First Name:</td>
+				<td><input type="text" th:field="*{firstName}" /></td>
+			</tr>
+			<tr>
+				<td>Last Name:</td>
+				<td><input type="text" th:field="*{lastName}" /></td>
+			</tr>
+			<tr>
+				<td>Username:</td>
+				<td><input type="text" th:field="*{userName}" /></td>
+			</tr>
+			<tr>
+				<td><button type="submit">Submit Your Name</button></td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Subscriber Sign-Up</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h3>Subscriber Sign-up Form</h3>
+	<p>Thank you for signing up!</p>
+	<h4>Subscriber:</h4>
+	<p th:text="${firstName}" />
+	<p th:text="${lastName}" />
+	<p th:text="${userName}" />
+</body>
+</html>-8t
