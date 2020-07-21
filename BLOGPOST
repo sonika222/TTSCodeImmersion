@@ -39,4 +39,235 @@
 	</form>
 </body>
 </html>
+<html xmlns:th="http://www.thymeleaf.org">
+<tr>
+    <td><button type="submit">Submit Your Post</button></td>
+</tr>
 
+<dependency>
+    <groupId>org.webjars</groupId>
+    <artifactId>bootstrap</artifactId>
+    <version>3.3.7</version>
+</dependency>
+<dependency>
+    <groupId>org.webjars</groupId>
+    <artifactId>bootstrap-datepicker</artifactId>
+    <version>1.0.1</version>
+</dependency>
+<dependency>
+    <groupId>org.webjars</groupId>
+    <artifactId>jquery</artifactId>
+    <version>1.9.1</version>
+</dependency>
+
+<link href="webjars/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+<script src="webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+
+ <p>Please use the form below to submit a Blog Post:</p>
+ <form action="#" th:action="@{/}" th:object="${blogPost}" method="post">
+    <table>
+    <tr>
+            <td>Title</td>
+        <td><input type="text" th:field="*{title}" /></td>
+    </tr>
+    <tr>
+        <td>Author:</td>
+        <td><input type="text" th:field="*{author}" /></td>
+    </tr>
+    <tr>
+            <td>Blog Entry:</td>
+        <td><input type="text" th:field="*{blogEntry}" /></td>
+    </tr>
+    <tr>
+        <td><button type="submit">Submit Your Post</button></td>
+    </tr>
+    </table>
+</form>
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Blog Site</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- Latest compiled and minified CSS -->
+	    <link href="webjars/bootstrap/3.3.7/css/bootstrap.min.css"
+        rel="stylesheet">
+</head>
+<body>
+<div class="container">
+<h1>Welcome to Our Blog Post Site!</h1>
+​
+<h3>Check out our blogs!</h3>
+​
+	<h3>Blog Post Form</h3>
+	<p>Thank you for your submisssion!</p>
+​
+	<h4>Blog Post:</h4>
+	<div class="row">
+		<div th:each="blog:${posts}">
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<p th:text="${blog.title}"/>
+				</div>
+				<div class="panel-body">
+					by: <p th:text="${blog.author}"/>
+					<p th:text="${blog.blogEntry}" />
+				</div>
+				<div class="panel-footer">
+					<!-- Link to Update -->
+					<!-- Link to Show  -->
+					<!--  Link to Destroy -->
+					Buttons
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<a th:href="@{/blog_posts/new}"><button class= "btn btn-primary">Submit a New Blog Post</button></a>
+​
+</div>
+	<script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+</body>
+</html>          
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Create a New Blog</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- Latest compiled and minified CSS -->
+	    <link href="../../webjars/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+	<body>
+		<div class="container">
+		<h1>Create a New Blog Post</h1>
+ 		<form action="#" th:action="@{/blog_posts/new}" th:object="${blogPost}" method="post">
+ 		
+ 		<div class="form-group">
+ 			<input type="text" class="form-control" placeholder="Blog Title..." th:field="*{title}" />
+ 		</div>
+ 		
+ 		<div class="form-group">
+ 			<input type="text" class="form-control" placeholder="Your Name Here..." th:field="*{author}" />
+ 		</div>
+ 		
+ 		<div class="form-group">
+ 			<input type="text" class ="form-control" placeholder="Blog Entry" th:field="*{blogEntry}" />
+ 		</div>
+​
+ 		<button class="btn btn-primary">Submit Your Post</button>
+</form>
+</div>
+	<script src="../../webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="../../webjars/jquery/1.9.1/jquery.min.js"></script>
+</body>
+</html>
+
+@Controller
+public class BlogPostController {
+    
+    @Autowired
+    private BlogPostRepository blogPostRepository;
+    private static List<BlogPost> posts = new ArrayList<>();
+    @GetMapping(value="/")
+    public String index(BlogPost blogPost, Model model) {
+        model.addAttribute("posts", posts);
+        return "blogpost/index";
+    }
+    
+    @GetMapping(value="/blog_posts/new")
+    public String newBlog(BlogPost blogPost) {
+        return "blogpost/new";
+    }
+    
+    @PostMapping(value="/blog_posts/new")
+    public String create(BlogPost blogPost, Model model) {
+        blogPostRepository.save(blogPost);
+        posts.add(blogPost);
+        model.addAttribute("title", blogPost.getTitle());
+        model.addAttribute("author", blogPost.getAuthor());
+        model.addAttribute("blogEntry", blogPost.getBlogEntry());
+        return "blogpost/result"; 
+    }
+    
+    @RequestMapping(value = "/blog_posts/{id}", method= RequestMethod.DELETE)
+    public String deletePostWithID(@PathVariable Long id, BlogPost blogPost) {
+        blogPostRepository.deleteById(id);
+        return "blogpost/index";
+    }
+    
+}
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Blog Project</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <link href="../../webjars/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+      <link href="../../css/standard.css" rel="stylesheet">
+</head>
+<body>
+       <div th:fragment="navbar">
+<!--ThymeLeaf is used to communicate from Java to html but can also be used in order to pass values like out fragments(Repeated Code) to our other HTML files -->
+  </div>
+  <script src="../../webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="../../webjars/jquery/1.9.1/jquery.min.js"></script>
+</body>
+</html>
+
+<nav class="navbar navbar-default">
+<div class="container-fluid">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">Brand</a>
+  </div>
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+      <li><a href="#">Link</a></li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Action</a></li>
+          <li><a href="#">Another action</a></li>
+          <li><a href="#">Something else here</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Separated link</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">One more separated link</a></li>
+        </ul>
+      </li>
+    </ul>
+    <form class="navbar-form navbar-left">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search">
+      </div>
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#">Link</a></li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Action</a></li>
+          <li><a href="#">Another action</a></li>
+          <li><a href="#">Something else here</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Separated link</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</div><!-- /.container-fluid -->
+</nav>
