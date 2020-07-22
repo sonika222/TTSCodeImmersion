@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+​
+<head>
+​
+<title>Replace with your Title</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+<link rel="stylesheet" href="/custom.css">
+​
+</head>
+
+<groupId>org.thymeleaf.extras</groupId>
+        <artifactId>thymeleaf-extras-springsecurity4</artifactId>
+        <version>3.0.2.RELEASE</version>
+    </dependency>
+    <dependency>
+        <groupId>org.ocpsoft.prettytime</groupId>
+        <artifactId>prettytime</artifactId>
+        <version>4.0.1.Final</version>
+    </dependency>
+    
+    # configure data source
+# the db will be stored in a file that persist across app restarts
+spring.h2.console.enabled = true
+spring.h2.console.path = /console
+spring.datasource.url = jdbc:h2:file:~/twitter
+spring.datasource.username = sa
+spring.datasource.password =
+spring.datasource.d
+river-class-name = org.h2.Driver
+# show sql queries in console
+spring.jpa.show-sql = true
+# update ddl when app starts
+spring.jpa.hibernate.ddl-auto = update
+# set up queries for loading users and roles
+spring.queries.users-query = select username, password, active from user where username=?
+spring.queries.roles-query = select u.username, r.role from user u inner join user_role ur on(u.user_id=ur.user_id) inner join role r on(ur.role_id=r.role_id) where u.username=?
+
+
+REPLACE INTO `role` VALUES (1,'USER');
+
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "user_id")
+    private Long id;
+    @Email(message = "Please provide a valid email")
+    @NotEmpty(message = "Please provide an email")
+    private String email;
+    @Length(min = 3, message = "Your username must have at least 3 characters")
+    @Length(max = 15, message = "Your username cannot have more than 15 characters")
+    @Pattern(regexp="[^\\s]", message="Your username cannot contain spaces")
+    private String username;
+    @Length(min = 5, message = "Your password must have at least 5 characters")
+    private String password;
+    private String firstName;
+    private String lastName;
+    private int active;
+    @CreationTimestamp 
+    private Date createdAt;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles;
+}
+
+<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/custom.js"></script>
+</body>
+</html>
+
